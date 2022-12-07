@@ -39,6 +39,7 @@ async function run() {
     const updateCollection = client.db("ashrafs").collection("update");
     const userCollection = client.db("ashrafs").collection("user");
     const boostCollection = client.db("ashrafs").collection("boost");
+    const promoteCollection = client.db("ashrafs").collection("promote");
 
     //  get all course for display
     app.get("/course", async (req, res) => {
@@ -115,6 +116,13 @@ async function run() {
     app.post("/facebookBoost", verifyJWT, async (req, res) => {
       const boost = req.body;
       const result = await boostCollection.insertOne(boost);
+      res.send(result);
+    });
+
+    // facebook basic promote
+    app.post("/promote", verifyJWT, async (req, res) => {
+      const basic = req.body;
+      const result = await promoteCollection.insertOne(basic);
       res.send(result);
     });
 
