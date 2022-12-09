@@ -40,6 +40,8 @@ async function run() {
     const userCollection = client.db("ashrafs").collection("user");
     const boostCollection = client.db("ashrafs").collection("boost");
     const promoteCollection = client.db("ashrafs").collection("promote");
+    const setupCollection = client.db("ashrafs").collection("pageSetup");
+    const recoverCollection = client.db("ashrafs").collection("recover");
 
     //  get all course for display
     app.get("/course", async (req, res) => {
@@ -123,6 +125,20 @@ async function run() {
     app.post("/promote", verifyJWT, async (req, res) => {
       const basic = req.body;
       const result = await promoteCollection.insertOne(basic);
+      res.send(result);
+    });
+
+    // facebook page setup
+    app.post("/pageSetup", verifyJWT, async (req, res) => {
+      const basic = req.body;
+      const result = await setupCollection.insertOne(basic);
+      res.send(result);
+    });
+
+    // facebook recover
+    app.post("/recover", verifyJWT, async (req, res) => {
+      const basic = req.body;
+      const result = await recoverCollection.insertOne(basic);
       res.send(result);
     });
 
