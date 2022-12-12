@@ -127,7 +127,7 @@ async function run() {
     app.post("/promote", verifyJWT, async (req, res) => {
       const basic = req.body;
       const result = await promoteCollection.insertOne(basic);
-      const order = await allOrdersCollection.insertOne(setup);
+      const order = await allOrdersCollection.insertOne(basic);
       res.send(result);
     });
 
@@ -147,7 +147,7 @@ async function run() {
       res.send(result);
     });
 
-    //get all order
+    // get all order
     app.get("/all-orders", verifyJWT, async (req, res) => {
       const email = req.decoded.email;
       const query = { email: email };
