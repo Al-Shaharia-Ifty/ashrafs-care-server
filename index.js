@@ -38,6 +38,7 @@ async function run() {
     const courseCollection = client.db("ashrafs").collection("viewCourse");
     const updateCollection = client.db("ashrafs").collection("update");
     const userCollection = client.db("ashrafs").collection("user");
+    const allOrdersCollection = client.db("ashrafs").collection("allOrder");
     const boostCollection = client.db("ashrafs").collection("boost");
     const promoteCollection = client.db("ashrafs").collection("promote");
     const setupCollection = client.db("ashrafs").collection("pageSetup");
@@ -118,6 +119,7 @@ async function run() {
     app.post("/facebookBoost", verifyJWT, async (req, res) => {
       const boost = req.body;
       const result = await boostCollection.insertOne(boost);
+      const order = await allOrdersCollection.insertOne(boost);
       res.send(result);
     });
 
@@ -125,13 +127,15 @@ async function run() {
     app.post("/promote", verifyJWT, async (req, res) => {
       const basic = req.body;
       const result = await promoteCollection.insertOne(basic);
+      const order = await allOrdersCollection.insertOne(setup);
       res.send(result);
     });
 
     // facebook page setup
     app.post("/pageSetup", verifyJWT, async (req, res) => {
-      const basic = req.body;
-      const result = await setupCollection.insertOne(basic);
+      const setup = req.body;
+      const result = await setupCollection.insertOne(setup);
+      const order = await allOrdersCollection.insertOne(setup);
       res.send(result);
     });
 
@@ -139,7 +143,20 @@ async function run() {
     app.post("/recover", verifyJWT, async (req, res) => {
       const basic = req.body;
       const result = await recoverCollection.insertOne(basic);
+      const order = await allOrdersCollection.insertOne(basic);
       res.send(result);
+    });
+
+    //get all order
+    app.get("/all-orders", verifyJWT, async (req, res) => {
+      const email = req.decoded.email;
+      const query = { email: email };
+      const allOrder = await allOrdersCollection.find(query).toArray();
+      const boost = await boostCollection.find(query).toArray();
+      const recover = await recoverCollection.find(query).toArray();
+      const pageSetup = await setupCollection.find(query).toArray();
+      const promote = await promoteCollection.find(query).toArray();
+      res.send({ allOrder, boost, recover, pageSetup, promote });
     });
 
     //
