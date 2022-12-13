@@ -159,6 +159,14 @@ async function run() {
       res.send({ allOrder, boost, recover, pageSetup, promote });
     });
 
+    // get order details
+    app.get("/order-details/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const details = await allOrdersCollection.findOne(query);
+      res.send(details);
+    });
+
     //
   } finally {
   }
