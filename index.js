@@ -43,6 +43,7 @@ async function run() {
     const promoteCollection = client.db("ashrafs").collection("promote");
     const setupCollection = client.db("ashrafs").collection("pageSetup");
     const recoverCollection = client.db("ashrafs").collection("recover");
+    const dollarRate = client.db("ashrafs").collection("dollarRate");
 
     //  get all course for display
     app.get("/course", async (req, res) => {
@@ -165,6 +166,12 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const details = await allOrdersCollection.findOne(query);
       res.send(details);
+    });
+
+    // dollar Rate
+    app.get("/dollarRate", async (req, res) => {
+      const dollar = await dollarRate.find({}).toArray();
+      res.send(dollar);
     });
 
     //
