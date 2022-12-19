@@ -103,6 +103,19 @@ async function run() {
       res.send(user);
     });
 
+    // get user
+    app.put("/userInfo", verifyJWT, async (req, res) => {
+      const email = req.decoded.email;
+      const body = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: body,
+      };
+      const user = await userCollection.updateOne(filter, updateDoc, options);
+      res.send(user);
+    });
+
     // update User
     app.put("/updateUser/:email", async (req, res) => {
       const email = req.params.email;
