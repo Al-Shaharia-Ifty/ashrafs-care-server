@@ -44,6 +44,7 @@ async function run() {
     const setupCollection = client.db("ashrafs").collection("pageSetup");
     const recoverCollection = client.db("ashrafs").collection("recover");
     const dollarRate = client.db("ashrafs").collection("dollarRate");
+    const designCollection = client.db("ashrafs").collection("graphicDesign");
 
     //  get all course for display
     app.get("/course", async (req, res) => {
@@ -185,6 +186,12 @@ async function run() {
     app.get("/dollarRate", async (req, res) => {
       const dollar = await dollarRate.find({}).toArray();
       res.send(dollar);
+    });
+
+    // get graphic design
+    app.get("/design", verifyJWT, async (req, res) => {
+      const design = await designCollection.find({}).toArray();
+      res.send(design);
     });
 
     //
