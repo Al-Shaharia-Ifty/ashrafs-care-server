@@ -194,6 +194,13 @@ async function run() {
       res.send(design);
     });
 
+    // post graphic order
+    app.post("/design", verifyJWT, async (req, res) => {
+      const order = req.body;
+      const result = await allOrdersCollection.insertOne(order);
+      res.send(result);
+    });
+
     //
   } finally {
   }
