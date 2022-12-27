@@ -45,6 +45,7 @@ async function run() {
     const recoverCollection = client.db("ashrafs").collection("recover");
     const dollarRate = client.db("ashrafs").collection("dollarRate");
     const designCollection = client.db("ashrafs").collection("graphicDesign");
+    const reportCollection = client.db("ashrafs").collection("report");
 
     //  get all course for display
     app.get("/course", async (req, res) => {
@@ -198,6 +199,13 @@ async function run() {
     app.post("/design", verifyJWT, async (req, res) => {
       const order = req.body;
       const result = await allOrdersCollection.insertOne(order);
+      res.send(result);
+    });
+
+    // post support
+    app.post("/report", verifyJWT, async (req, res) => {
+      const support = req.body;
+      const result = await reportCollection.insertOne(support);
       res.send(result);
     });
 
