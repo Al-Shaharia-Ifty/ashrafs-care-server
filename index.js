@@ -39,6 +39,9 @@ async function run() {
     const updateCollection = client.db("ashrafs").collection("update");
     const userCollection = client.db("ashrafs").collection("user");
     const allOrdersCollection = client.db("ashrafs").collection("allOrder");
+    const graphicOrderCollection = client
+      .db("ashrafs")
+      .collection("graphicOrder");
     const boostCollection = client.db("ashrafs").collection("boost");
     const promoteCollection = client.db("ashrafs").collection("promote");
     const setupCollection = client.db("ashrafs").collection("pageSetup");
@@ -172,7 +175,8 @@ async function run() {
       const recover = await recoverCollection.find(query).toArray();
       const pageSetup = await setupCollection.find(query).toArray();
       const promote = await promoteCollection.find(query).toArray();
-      res.send({ allOrder, boost, recover, pageSetup, promote });
+      const graphicOrder = await graphicOrderCollection.find(query).toArray();
+      res.send({ allOrder, boost, recover, pageSetup, promote, graphicOrder });
     });
 
     // get order details
@@ -197,8 +201,9 @@ async function run() {
 
     // post graphic order
     app.post("/design", verifyJWT, async (req, res) => {
-      const order = req.body;
-      const result = await allOrdersCollection.insertOne(order);
+      const design = req.body;
+      const result = await graphicOrderCollection.insertOne(design);
+      const order = await allOrdersCollection.insertOne(design);
       res.send(result);
     });
 
@@ -208,6 +213,19 @@ async function run() {
       const result = await reportCollection.insertOne(support);
       res.send(result);
     });
+
+    // add order balance
+    // app.put("/balance",verifyJWT,async(req,res)=>{
+    //   const email = req.params.email;
+    //   const balance = req.body;
+    //   const filter = { email: email };
+    //   const options = { upsert: true };
+    //   const updateDoc = {
+    //     $set: balance,
+    //   };
+    //   const user = await userCollection.updateOne(filter, updateDoc, options);
+    //   res.send(user);
+    // })
 
     //
   } finally {
