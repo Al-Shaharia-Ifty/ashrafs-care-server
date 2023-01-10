@@ -215,17 +215,36 @@ async function run() {
     });
 
     // add order balance
-    // app.put("/balance",verifyJWT,async(req,res)=>{
-    //   const email = req.params.email;
-    //   const balance = req.body;
-    //   const filter = { email: email };
-    //   const options = { upsert: true };
-    //   const updateDoc = {
-    //     $set: balance,
-    //   };
-    //   const user = await userCollection.updateOne(filter, updateDoc, options);
-    //   res.send(user);
-    // })
+    app.put("/balance", verifyJWT, async (req, res) => {
+      const email = req.decoded.email;
+      const balanceInfo = req.body;
+      const filter = { email: email };
+      // get user info
+      const user = await userCollection.findOne(filter);
+      const userBalance = user.balance;
+      const options = { upsert: true };
+
+      if (!userBalance) {
+        const updateDoc = {
+          $set: balanceInfo,
+        };
+        const balance = await userCollection.updateOne(
+          filter,
+          updateDoc,
+          options
+        );
+        res.send(balance);
+      } else {
+        const totalBalance = userBalance + balanceInfo.balance;
+        const balance = { balance: totalBalance };
+
+        const updateDoc = {
+          $set: balance,
+        };
+        const user = await userCollection.updateOne(filter, updateDoc, options);
+        res.send(user);
+      }
+    });
 
     //
   } finally {
