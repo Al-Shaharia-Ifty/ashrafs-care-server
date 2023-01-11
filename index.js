@@ -49,6 +49,7 @@ async function run() {
     const dollarRate = client.db("ashrafs").collection("dollarRate");
     const designCollection = client.db("ashrafs").collection("graphicDesign");
     const reportCollection = client.db("ashrafs").collection("report");
+    const supportCollection = client.db("ashrafs").collection("get-support");
 
     //  get all course for display
     app.get("/course", async (req, res) => {
@@ -244,6 +245,13 @@ async function run() {
         const user = await userCollection.updateOne(filter, updateDoc, options);
         res.send(user);
       }
+    });
+
+    // get support
+    app.post("/get-support", verifyJWT, async (req, res) => {
+      const supportInfo = req.body;
+      const result = await supportCollection.insertOne(supportInfo);
+      res.send(result);
     });
 
     //
