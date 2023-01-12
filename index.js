@@ -50,6 +50,9 @@ async function run() {
     const designCollection = client.db("ashrafs").collection("graphicDesign");
     const reportCollection = client.db("ashrafs").collection("report");
     const supportCollection = client.db("ashrafs").collection("get-support");
+    const bannerCollection = client
+      .db("ashrafs")
+      .collection("dashboard-banner");
 
     //  get all course for display
     app.get("/course", async (req, res) => {
@@ -63,6 +66,12 @@ async function run() {
       const query = {};
       const update = await updateCollection.find(query).toArray();
       res.send(update);
+    });
+
+    app.get("/banner", async (req, res) => {
+      const query = {};
+      const banner = await bannerCollection.find(query).toArray();
+      res.send(banner);
     });
 
     // get one update for display
