@@ -39,13 +39,6 @@ async function run() {
     const updateCollection = client.db("ashrafs").collection("update");
     const userCollection = client.db("ashrafs").collection("user");
     const allOrdersCollection = client.db("ashrafs").collection("allOrder");
-    const graphicOrderCollection = client
-      .db("ashrafs")
-      .collection("graphicOrder");
-    const boostCollection = client.db("ashrafs").collection("boost");
-    const promoteCollection = client.db("ashrafs").collection("promote");
-    const setupCollection = client.db("ashrafs").collection("pageSetup");
-    const recoverCollection = client.db("ashrafs").collection("recover");
     const dollarRate = client.db("ashrafs").collection("dollarRate");
     const designCollection = client.db("ashrafs").collection("graphicDesign");
     const reportCollection = client.db("ashrafs").collection("report");
@@ -53,6 +46,37 @@ async function run() {
     const bannerCollection = client
       .db("ashrafs")
       .collection("dashboard-banner");
+
+    // verifyMember check
+    const verifyMember = async (req, res, next) => {
+      const email = req.decoded.email;
+      const user = await userCollection.findOne({ email: email });
+      if (user.role === "member") {
+        next();
+      } else if (user.role === "admin") {
+        next();
+      } else {
+        return res.status(403).send({ message: "forbidden access" });
+      }
+    };
+
+    // verifyAdmin check
+    const verifyAdmin = async (req, res, next) => {
+      const email = req.decoded.email;
+      const user = await userCollection.findOne({ email: email });
+      if (user.role === "admin") {
+        next();
+      } else {
+        return res.status(403).send({ message: "forbidden access" });
+      }
+    };
+
+    // admin all order
+    app.get("/admin/allOrder", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const allOrder = await allOrdersCollection.find(query).toArray();
+      res.send(allOrder);
+    });
 
     //  get all course for display
     app.get("/course", async (req, res) => {
@@ -111,7 +135,7 @@ async function run() {
     });
 
     // get user
-    app.get("/userInfo", verifyJWT, async (req, res) => {
+    app.get("/userInfo", verifyJWT, verifyMember, async (req, res) => {
       const email = req.decoded.email;
       const query = { email: email };
       const user = await userCollection.findOne(query);
@@ -119,7 +143,7 @@ async function run() {
     });
 
     // get user
-    app.put("/userInfo", verifyJWT, async (req, res) => {
+    app.put("/userInfo", verifyJWT, verifyMember, async (req, res) => {
       const email = req.decoded.email;
       const body = req.body;
       const filter = { email: email };
@@ -145,52 +169,43 @@ async function run() {
     });
 
     // facebook boost post
-    app.post("/facebookBoost", verifyJWT, async (req, res) => {
+    app.post("/facebookBoost", verifyJWT, verifyMember, async (req, res) => {
       const boost = req.body;
-      const result = await boostCollection.insertOne(boost);
       const order = await allOrdersCollection.insertOne(boost);
-      res.send(result);
+      res.send(order);
     });
 
     // facebook basic promote
-    app.post("/promote", verifyJWT, async (req, res) => {
+    app.post("/promote", verifyJWT, verifyMember, async (req, res) => {
       const basic = req.body;
-      const result = await promoteCollection.insertOne(basic);
       const order = await allOrdersCollection.insertOne(basic);
-      res.send(result);
+      res.send(order);
     });
 
     // facebook page setup
-    app.post("/pageSetup", verifyJWT, async (req, res) => {
+    app.post("/pageSetup", verifyJWT, verifyMember, async (req, res) => {
       const setup = req.body;
-      const result = await setupCollection.insertOne(setup);
       const order = await allOrdersCollection.insertOne(setup);
-      res.send(result);
+      res.send(order);
     });
 
     // facebook recover
-    app.post("/recover", verifyJWT, async (req, res) => {
+    app.post("/recover", verifyJWT, verifyMember, async (req, res) => {
       const basic = req.body;
-      const result = await recoverCollection.insertOne(basic);
       const order = await allOrdersCollection.insertOne(basic);
-      res.send(result);
+      res.send(order);
     });
 
     // get all order
-    app.get("/all-orders", verifyJWT, async (req, res) => {
+    app.get("/all-orders", verifyJWT, verifyMember, async (req, res) => {
       const email = req.decoded.email;
       const query = { email: email };
       const allOrder = await allOrdersCollection.find(query).toArray();
-      const boost = await boostCollection.find(query).toArray();
-      const recover = await recoverCollection.find(query).toArray();
-      const pageSetup = await setupCollection.find(query).toArray();
-      const promote = await promoteCollection.find(query).toArray();
-      const graphicOrder = await graphicOrderCollection.find(query).toArray();
-      res.send({ allOrder, boost, recover, pageSetup, promote, graphicOrder });
+      res.send({ allOrder });
     });
 
     // get order details
-    app.get("/order-details/:id", verifyJWT, async (req, res) => {
+    app.get("/order-details/:id", verifyJWT, verifyMember, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const details = await allOrdersCollection.findOne(query);
@@ -204,28 +219,27 @@ async function run() {
     });
 
     // get graphic design
-    app.get("/design", verifyJWT, async (req, res) => {
+    app.get("/design", verifyJWT, verifyMember, async (req, res) => {
       const design = await designCollection.find({}).toArray();
       res.send(design);
     });
 
     // post graphic order
-    app.post("/design", verifyJWT, async (req, res) => {
+    app.post("/design", verifyJWT, verifyMember, async (req, res) => {
       const design = req.body;
-      const result = await graphicOrderCollection.insertOne(design);
       const order = await allOrdersCollection.insertOne(design);
-      res.send(result);
+      res.send(order);
     });
 
     // post support
-    app.post("/report", verifyJWT, async (req, res) => {
+    app.post("/report", verifyJWT, verifyMember, async (req, res) => {
       const support = req.body;
       const result = await reportCollection.insertOne(support);
       res.send(result);
     });
 
     // add order balance
-    app.put("/balance", verifyJWT, async (req, res) => {
+    app.put("/balance", verifyJWT, verifyMember, async (req, res) => {
       const email = req.decoded.email;
       const balanceInfo = req.body;
       const filter = { email: email };
@@ -257,7 +271,7 @@ async function run() {
     });
 
     // get support
-    app.post("/get-support", verifyJWT, async (req, res) => {
+    app.post("/get-support", verifyJWT, verifyMember, async (req, res) => {
       const supportInfo = req.body;
       const result = await supportCollection.insertOne(supportInfo);
       res.send(result);
