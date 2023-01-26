@@ -78,6 +78,27 @@ async function run() {
       res.send(allOrder);
     });
 
+    app.put(
+      "/admin/orderStatus/:id",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const _id = req.params.id;
+        const orderStatus = req.body;
+        const filter = { _id: ObjectId(_id) };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: orderStatus,
+        };
+        const result = await allOrdersCollection.updateOne(
+          filter,
+          updateDoc,
+          options
+        );
+        res.send(result);
+      }
+    );
+
     //  get all course for display
     app.get("/course", async (req, res) => {
       const query = {};
