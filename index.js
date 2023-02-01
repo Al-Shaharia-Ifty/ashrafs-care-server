@@ -78,6 +78,37 @@ async function run() {
       res.send(allOrder);
     });
 
+    // get admin panel
+    app.get("/admin/admin-panel", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const allUser = await userCollection.find(query).toArray();
+      res.send(allUser);
+    });
+
+    // update to make member
+    app.put("/admin/make-member", verifyJWT, verifyAdmin, async (req, res) => {
+      const id = req.body;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: { role: "member" },
+      };
+      const user = await userCollection.updateOne(filter, updateDoc, options);
+      res.send(user);
+    });
+
+    // update to make member
+    app.put("/admin/make-admin", verifyJWT, verifyAdmin, async (req, res) => {
+      const id = req.body;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: { role: "admin" },
+      };
+      const user = await userCollection.updateOne(filter, updateDoc, options);
+      res.send(user);
+    });
+
     app.put(
       "/admin/orderStatus/:id",
       verifyJWT,
