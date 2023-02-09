@@ -71,6 +71,24 @@ async function run() {
       }
     };
 
+    // update dollarRate
+    app.put(
+      "/admin/updateDollarRate",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.body.id;
+        const rate = req.body.rate;
+        const filter = { _id: ObjectId(id) };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: { dollarRate: rate },
+        };
+        const user = await dollarRate.updateOne(filter, updateDoc, options);
+        res.send(user);
+      }
+    );
+
     // admin all order
     app.get("/admin/allOrder", verifyJWT, verifyAdmin, async (req, res) => {
       const query = {};
