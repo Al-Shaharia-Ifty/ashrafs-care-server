@@ -43,6 +43,9 @@ async function run() {
     const designCollection = client.db("ashrafs").collection("graphicDesign");
     const reportCollection = client.db("ashrafs").collection("report");
     const supportCollection = client.db("ashrafs").collection("get-support");
+    const allNotificationCollection = client
+      .db("ashrafs")
+      .collection("allNotification");
     const bannerCollection = client
       .db("ashrafs")
       .collection("dashboard-banner");
@@ -70,6 +73,27 @@ async function run() {
         return res.status(403).send({ message: "forbidden access" });
       }
     };
+
+    // get all notification
+    app.get("/get-notification", verifyJWT, verifyMember, async (req, res) => {
+      const query = {};
+      const notification = await allNotificationCollection
+        .find(query)
+        .toArray();
+      res.send(notification);
+    });
+
+    // add notification by admin
+    app.post(
+      "/admin/add-notification",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const notification = req.body;
+        const result = await allNotificationCollection.insertOne(notification);
+        res.send(result);
+      }
+    );
 
     // update dollarRate
     app.put(
