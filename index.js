@@ -74,6 +74,32 @@ async function run() {
       }
     };
 
+    // update notification
+    app.put("/admin/updateNote", verifyJWT, verifyAdmin, async (req, res) => {
+      const message = req.body.message;
+      const id = req.body.id;
+
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: { p: message },
+      };
+      const result = await allNotificationCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+
+    // delete notification
+    app.delete("/admin/deleteNot", verifyJWT, verifyAdmin, async (req, res) => {
+      const id = req.body;
+      const query = { _id: ObjectId(id) };
+      const result = await allNotificationCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // get all notification
     app.get("/get-notification", verifyJWT, verifyMember, async (req, res) => {
       const query = {};
