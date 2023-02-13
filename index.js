@@ -74,6 +74,35 @@ async function run() {
       }
     };
 
+    // update admin support
+    app.put(
+      "/admin/support-solve",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const solve = req.body.solve;
+        const id = req.body.id;
+        const filter = { _id: ObjectId(id) };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: { solve: solve },
+        };
+        const result = await supportCollection.updateOne(
+          filter,
+          updateDoc,
+          options
+        );
+        res.send(result);
+      }
+    );
+
+    // admin get support
+    app.get("/admin/allSupport", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const reports = await supportCollection.find(query).toArray();
+      res.send(reports);
+    });
+
     // update admin report
     app.put("/admin/report-solve", verifyJWT, verifyAdmin, async (req, res) => {
       const solve = req.body.solve;
