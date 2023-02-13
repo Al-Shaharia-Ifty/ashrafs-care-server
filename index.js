@@ -74,6 +74,30 @@ async function run() {
       }
     };
 
+    // update admin report
+    app.put("/admin/report-solve", verifyJWT, verifyAdmin, async (req, res) => {
+      const solve = req.body.solve;
+      const id = req.body.id;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: { solve: solve },
+      };
+      const result = await reportCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+
+    // admin get report
+    app.get("/admin/allReport", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const reports = await reportCollection.find(query).toArray();
+      res.send(reports);
+    });
+
     // update notification
     app.put("/admin/updateNote", verifyJWT, verifyAdmin, async (req, res) => {
       const message = req.body.message;
