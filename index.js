@@ -74,6 +74,20 @@ async function run() {
       }
     };
 
+    // add front page update
+    app.post("/admin/add-update", verifyJWT, verifyAdmin, async (req, res) => {
+      const design = req.body;
+      const order = await updateCollection.insertOne(design);
+      res.send(order);
+    });
+
+    // add admin banner
+    app.post("/admin/post-banner", verifyJWT, verifyAdmin, async (req, res) => {
+      const design = req.body;
+      const order = await bannerCollection.insertOne(design);
+      res.send(order);
+    });
+
     // add admin graphic
     app.post("/admin/post-design", verifyJWT, verifyAdmin, async (req, res) => {
       const design = req.body;
