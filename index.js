@@ -74,6 +74,13 @@ async function run() {
       }
     };
 
+    // add admin graphic
+    app.post("/admin/post-design", verifyJWT, verifyAdmin, async (req, res) => {
+      const design = req.body;
+      const order = await designCollection.insertOne(design);
+      res.send(order);
+    });
+
     // update admin support
     app.put(
       "/admin/support-solve",
