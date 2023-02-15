@@ -74,6 +74,19 @@ async function run() {
       }
     };
 
+    // delete update
+    app.delete(
+      "/admin/delete-update",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.body;
+        const query = { _id: ObjectId(id) };
+        const result = await updateCollection.deleteOne(query);
+        res.send(result);
+      }
+    );
+
     // add front page update
     app.post("/admin/add-update", verifyJWT, verifyAdmin, async (req, res) => {
       const design = req.body;
