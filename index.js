@@ -36,6 +36,7 @@ function verifyJWT(req, res, next) {
 async function run() {
   try {
     const courseCollection = client.db("ashrafs").collection("viewCourse");
+    const adminBalance = client.db("ashrafs").collection("adminBalance");
     const updateCollection = client.db("ashrafs").collection("update");
     const userCollection = client.db("ashrafs").collection("user");
     const allOrdersCollection = client.db("ashrafs").collection("allOrder");
@@ -73,6 +74,31 @@ async function run() {
         return res.status(403).send({ message: "forbidden access" });
       }
     };
+
+    // update admin balance
+    app.put(
+      "/admin/update-balance",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const balance = req.body.balance;
+        const id = req.body.id;
+        const filter = { _id: ObjectId(id) };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: { balance: balance },
+        };
+        const result = await adminBalance.updateOne(filter, updateDoc, options);
+        res.send(filter);
+      }
+    );
+
+    // admin balance
+    app.get("/admin-balance", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const balance = await adminBalance.find(query).toArray();
+      res.send(balance);
+    });
 
     // delete update
     app.delete(
