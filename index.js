@@ -75,6 +75,28 @@ async function run() {
       }
     };
 
+    // update user by admin
+    app.put(
+      "/admin/update-userInfo/:email",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const email = req.params.email;
+        const userInfo = req.body;
+        const filter = { email: email };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: userInfo,
+        };
+        const result = await userCollection.updateOne(
+          filter,
+          updateDoc,
+          options
+        );
+        res.send(result);
+      }
+    );
+
     // update admin balance
     app.put(
       "/admin/update-balance",
@@ -89,7 +111,7 @@ async function run() {
           $set: { balance: balance },
         };
         const result = await adminBalance.updateOne(filter, updateDoc, options);
-        res.send(filter);
+        res.send(result);
       }
     );
 
