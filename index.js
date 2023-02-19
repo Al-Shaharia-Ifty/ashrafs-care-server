@@ -37,6 +37,9 @@ async function run() {
   try {
     const courseCollection = client.db("ashrafs").collection("viewCourse");
     const adminBalance = client.db("ashrafs").collection("adminBalance");
+    const adminAllPaymentsCollection = client
+      .db("ashrafs")
+      .collection("adminPayments");
     const updateCollection = client.db("ashrafs").collection("update");
     const userCollection = client.db("ashrafs").collection("user");
     const allOrdersCollection = client.db("ashrafs").collection("allOrder");
@@ -75,6 +78,20 @@ async function run() {
       }
     };
 
+    // get admin payments
+    app.get("/admin-payments", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const result = await adminAllPaymentsCollection.find({}).toArray();
+      res.send(result);
+    });
+
+    // add admin payments
+    app.post("/admin/add-payment", verifyJWT, verifyAdmin, async (req, res) => {
+      const info = req.body;
+      const result = await adminAllPaymentsCollection.insertOne(info);
+      res.send(result);
+    });
+
     // update user by admin
     app.put(
       "/admin/update-userInfo/:email",
@@ -96,6 +113,13 @@ async function run() {
         res.send(result);
       }
     );
+
+    // admin all payments
+    app.get("/admin/payments", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const result = await adminAllPaymentsCollection.find(query).toArray();
+      res.send(result);
+    });
 
     // update admin balance
     app.put(
@@ -243,95 +267,6 @@ async function run() {
         .toArray();
       res.send(notification);
     });
-
-    // add notification by admin
-    app.post(
-      "/admin/add-notification",
-      verifyJWT,
-      verifyAdmin,
-      async (req, res) => {
-        const notification = req.body;
-        const result = await allNotificationCollection.insertOne(notification);
-        res.send(result);
-      }
-    );
-
-    // update dollarRate
-    app.put(
-      "/admin/updateDollarRate",
-      verifyJWT,
-      verifyAdmin,
-      async (req, res) => {
-        const id = req.body.id;
-        const rate = req.body.rate;
-        const filter = { _id: ObjectId(id) };
-        const options = { upsert: true };
-        const updateDoc = {
-          $set: { dollarRate: rate },
-        };
-        const user = await dollarRate.updateOne(filter, updateDoc, options);
-        res.send(user);
-      }
-    );
-
-    // admin all order
-    app.get("/admin/allOrder", verifyJWT, verifyAdmin, async (req, res) => {
-      const query = {};
-      const allOrder = await allOrdersCollection.find(query).toArray();
-      res.send(allOrder);
-    });
-
-    // get admin panel
-    app.get("/admin/admin-panel", verifyJWT, verifyAdmin, async (req, res) => {
-      const query = {};
-      const allUser = await userCollection.find(query).toArray();
-      res.send(allUser);
-    });
-
-    // update to make member
-    app.put("/admin/make-member", verifyJWT, verifyAdmin, async (req, res) => {
-      const id = req.body;
-      const filter = { _id: ObjectId(id) };
-      const options = { upsert: true };
-      const updateDoc = {
-        $set: { role: "member" },
-      };
-      const user = await userCollection.updateOne(filter, updateDoc, options);
-      res.send(user);
-    });
-
-    // update to make member
-    app.put("/admin/make-admin", verifyJWT, verifyAdmin, async (req, res) => {
-      const id = req.body;
-      const filter = { _id: ObjectId(id) };
-      const options = { upsert: true };
-      const updateDoc = {
-        $set: { role: "admin" },
-      };
-      const user = await userCollection.updateOne(filter, updateDoc, options);
-      res.send(user);
-    });
-
-    app.put(
-      "/admin/orderStatus/:id",
-      verifyJWT,
-      verifyAdmin,
-      async (req, res) => {
-        const _id = req.params.id;
-        const orderStatus = req.body;
-        const filter = { _id: ObjectId(_id) };
-        const options = { upsert: true };
-        const updateDoc = {
-          $set: orderStatus,
-        };
-        const result = await allOrdersCollection.updateOne(
-          filter,
-          updateDoc,
-          options
-        );
-        res.send(result);
-      }
-    );
 
     //  get all course for display
     app.get("/course", async (req, res) => {
@@ -531,6 +466,96 @@ async function run() {
       const result = await supportCollection.insertOne(supportInfo);
       res.send(result);
     });
+
+    // admin
+    // add notification by admin
+    app.post(
+      "/admin/add-notification",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const notification = req.body;
+        const result = await allNotificationCollection.insertOne(notification);
+        res.send(result);
+      }
+    );
+
+    // update dollarRate
+    app.put(
+      "/admin/updateDollarRate",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.body.id;
+        const rate = req.body.rate;
+        const filter = { _id: ObjectId(id) };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: { dollarRate: rate },
+        };
+        const user = await dollarRate.updateOne(filter, updateDoc, options);
+        res.send(user);
+      }
+    );
+
+    // admin all order
+    app.get("/admin/allOrder", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const allOrder = await allOrdersCollection.find(query).toArray();
+      res.send(allOrder);
+    });
+
+    // get admin panel
+    app.get("/admin/admin-panel", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const allUser = await userCollection.find(query).toArray();
+      res.send(allUser);
+    });
+
+    // update to make member
+    app.put("/admin/make-member", verifyJWT, verifyAdmin, async (req, res) => {
+      const id = req.body;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: { role: "member" },
+      };
+      const user = await userCollection.updateOne(filter, updateDoc, options);
+      res.send(user);
+    });
+
+    // update to make member
+    app.put("/admin/make-admin", verifyJWT, verifyAdmin, async (req, res) => {
+      const id = req.body;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: { role: "admin" },
+      };
+      const user = await userCollection.updateOne(filter, updateDoc, options);
+      res.send(user);
+    });
+
+    app.put(
+      "/admin/orderStatus/:id",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const _id = req.params.id;
+        const orderStatus = req.body;
+        const filter = { _id: ObjectId(_id) };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: orderStatus,
+        };
+        const result = await allOrdersCollection.updateOne(
+          filter,
+          updateDoc,
+          options
+        );
+        res.send(result);
+      }
+    );
 
     //
   } finally {
