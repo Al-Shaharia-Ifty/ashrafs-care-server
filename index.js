@@ -259,6 +259,14 @@ async function run() {
       res.send(result);
     });
 
+    // get member reports
+    app.get("/user/reports", verifyJWT, verifyMember, async (req, res) => {
+      const email = req.decoded.email;
+      const query = { email: email };
+      const result = await reportCollection.find(query).toArray();
+      res.send(result);
+    });
+
     // get all notification
     app.get("/get-notification", verifyJWT, verifyMember, async (req, res) => {
       const query = {};
