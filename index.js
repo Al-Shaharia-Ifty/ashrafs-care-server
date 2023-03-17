@@ -159,6 +159,19 @@ async function run() {
       }
     );
 
+    // delete Order
+    app.delete(
+      "/admin/delete-order",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.body._id;
+        const query = { _id: ObjectId(id) };
+        const result = await allOrdersCollection.deleteOne(query);
+        res.send(result);
+      }
+    );
+
     // add front page update
     app.post("/admin/add-update", verifyJWT, verifyAdmin, async (req, res) => {
       const design = req.body;
