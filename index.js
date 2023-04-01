@@ -78,6 +78,28 @@ async function run() {
       }
     };
 
+    // update admin order details
+    app.put(
+      "/admin/edit-details/:id",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.params.id;
+        const editInfo = req.body;
+        const filter = { _id: ObjectId(id) };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: editInfo,
+        };
+        const result = await allOrdersCollection.updateOne(
+          filter,
+          updateDoc,
+          options
+        );
+        res.send(result);
+      }
+    );
+
     // get admin payments
     app.get("/admin-payments", verifyJWT, verifyAdmin, async (req, res) => {
       const query = {};
