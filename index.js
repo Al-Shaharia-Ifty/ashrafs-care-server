@@ -78,245 +78,13 @@ async function run() {
       }
     };
 
-    // update admin order details
-    app.put(
-      "/admin/edit-details/:id",
-      verifyJWT,
-      verifyAdmin,
-      async (req, res) => {
-        const id = req.params.id;
-        const editInfo = req.body;
-        const filter = { _id: ObjectId(id) };
-        const options = { upsert: true };
-        const updateDoc = {
-          $set: editInfo,
-        };
-        const result = await allOrdersCollection.updateOne(
-          filter,
-          updateDoc,
-          options
-        );
-        res.send(result);
-      }
-    );
+    /*---- get ----*/
 
-    // get admin payments
-    app.get("/admin-payments", verifyJWT, verifyAdmin, async (req, res) => {
+    // get all updates for display
+    app.get("/update", async (req, res) => {
       const query = {};
-      const result = await adminAllPaymentsCollection.find({}).toArray();
-      res.send(result);
-    });
-
-    // add admin payments
-    app.post("/admin/add-payment", verifyJWT, verifyAdmin, async (req, res) => {
-      const info = req.body;
-      const result = await adminAllPaymentsCollection.insertOne(info);
-      res.send(result);
-    });
-
-    // update user by admin
-    app.put(
-      "/admin/update-userInfo/:email",
-      verifyJWT,
-      verifyAdmin,
-      async (req, res) => {
-        const email = req.params.email;
-        const userInfo = req.body;
-        const filter = { email: email };
-        const options = { upsert: true };
-        const updateDoc = {
-          $set: userInfo,
-        };
-        const result = await userCollection.updateOne(
-          filter,
-          updateDoc,
-          options
-        );
-        res.send(result);
-      }
-    );
-
-    // admin all payments
-    app.get("/admin/payments", verifyJWT, verifyAdmin, async (req, res) => {
-      const query = {};
-      const result = await adminAllPaymentsCollection.find(query).toArray();
-      res.send(result);
-    });
-
-    // update admin balance
-    app.put(
-      "/admin/update-balance",
-      verifyJWT,
-      verifyAdmin,
-      async (req, res) => {
-        const balance = req.body.balance;
-        const id = req.body.id;
-        const filter = { _id: ObjectId(id) };
-        const options = { upsert: true };
-        const updateDoc = {
-          $set: { balance: balance },
-        };
-        const result = await adminBalance.updateOne(filter, updateDoc, options);
-        res.send(result);
-      }
-    );
-
-    // admin balance
-    app.get("/admin-balance", verifyJWT, verifyAdmin, async (req, res) => {
-      const query = {};
-      const balance = await adminBalance.find(query).toArray();
-      res.send(balance);
-    });
-
-    // delete update
-    app.delete(
-      "/admin/delete-update",
-      verifyJWT,
-      verifyAdmin,
-      async (req, res) => {
-        const id = req.body;
-        const query = { _id: ObjectId(id) };
-        const result = await updateCollection.deleteOne(query);
-        res.send(result);
-      }
-    );
-
-    // delete Order
-    app.delete(
-      "/admin/delete-order",
-      verifyJWT,
-      verifyAdmin,
-      async (req, res) => {
-        const id = req.body._id;
-        const query = { _id: ObjectId(id) };
-        const result = await allOrdersCollection.deleteOne(query);
-        res.send(result);
-      }
-    );
-
-    // add front page update
-    app.post("/admin/add-update", verifyJWT, verifyAdmin, async (req, res) => {
-      const design = req.body;
-      const order = await updateCollection.insertOne(design);
-      res.send(order);
-    });
-
-    // add admin banner
-    app.post("/admin/post-banner", verifyJWT, verifyAdmin, async (req, res) => {
-      const design = req.body;
-      const order = await bannerCollection.insertOne(design);
-      res.send(order);
-    });
-
-    // add admin graphic
-    app.post("/admin/post-design", verifyJWT, verifyAdmin, async (req, res) => {
-      const design = req.body;
-      const order = await designCollection.insertOne(design);
-      res.send(order);
-    });
-
-    // update admin support
-    app.put(
-      "/admin/support-solve",
-      verifyJWT,
-      verifyAdmin,
-      async (req, res) => {
-        const solve = req.body.solve;
-        const id = req.body.id;
-        const filter = { _id: ObjectId(id) };
-        const options = { upsert: true };
-        const updateDoc = {
-          $set: { solve: solve },
-        };
-        const result = await supportCollection.updateOne(
-          filter,
-          updateDoc,
-          options
-        );
-        res.send(result);
-      }
-    );
-
-    // admin get support
-    app.get("/admin/allSupport", verifyJWT, verifyAdmin, async (req, res) => {
-      const query = {};
-      const reports = await supportCollection.find(query).toArray();
-      res.send(reports);
-    });
-
-    // update admin report
-    app.put("/admin/report-solve", verifyJWT, verifyAdmin, async (req, res) => {
-      const solve = req.body.solve;
-      const id = req.body.id;
-      const filter = { _id: ObjectId(id) };
-      const options = { upsert: true };
-      const updateDoc = {
-        $set: { solve: solve },
-      };
-      const result = await reportCollection.updateOne(
-        filter,
-        updateDoc,
-        options
-      );
-      res.send(result);
-    });
-
-    // admin get report
-    app.get("/admin/allReport", verifyJWT, verifyAdmin, async (req, res) => {
-      const query = {};
-      const reports = await reportCollection.find(query).toArray();
-      res.send(reports);
-    });
-
-    // update notification
-    app.put("/admin/updateNote", verifyJWT, verifyAdmin, async (req, res) => {
-      const message = req.body.message;
-      const id = req.body.id;
-
-      const filter = { _id: ObjectId(id) };
-      const options = { upsert: true };
-      const updateDoc = {
-        $set: { p: message },
-      };
-      const result = await allNotificationCollection.updateOne(
-        filter,
-        updateDoc,
-        options
-      );
-      res.send(result);
-    });
-
-    // delete notification
-    app.delete("/admin/deleteNot", verifyJWT, verifyAdmin, async (req, res) => {
-      const id = req.body;
-      const query = { _id: ObjectId(id) };
-      const result = await allNotificationCollection.deleteOne(query);
-      res.send(result);
-    });
-
-    // get member reports
-    app.get("/user/reports", verifyJWT, verifyMember, async (req, res) => {
-      const email = req.decoded.email;
-      const query = { email: email };
-      const result = await reportCollection.find(query).toArray();
-      res.send(result);
-    });
-
-    // get member reports
-    app.get("/user/support", verifyJWT, verifyMember, async (req, res) => {
-      const email = req.decoded.email;
-      const query = { email: email };
-      const result = await supportCollection.find(query).toArray();
-      res.send(result);
-    });
-
-    // get all notification
-    app.get("/get-notification", verifyJWT, verifyMember, async (req, res) => {
-      const query = {};
-      const notification = await allNotificationCollection
-        .find(query)
-        .toArray();
-      res.send(notification);
+      const update = await updateCollection.find(query).toArray();
+      res.send(update);
     });
 
     //  get all course for display
@@ -324,13 +92,6 @@ async function run() {
       const query = {};
       const course = await courseCollection.find(query).toArray();
       res.send(course);
-    });
-
-    // get all updates for display
-    app.get("/update", async (req, res) => {
-      const query = {};
-      const update = await updateCollection.find(query).toArray();
-      res.send(update);
     });
 
     app.get("/banner", async (req, res) => {
@@ -347,95 +108,13 @@ async function run() {
       res.send(update);
     });
 
-    // Login user
-    app.put("/user/:email", async (req, res) => {
-      const email = req.params.email;
-      const user = req.body;
-      const filter = { email: email };
-      const options = { upsert: true };
-      const updateDoc = {
-        $set: user,
-      };
-      const result = await userCollection.updateOne(filter, updateDoc, options);
-      const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET);
-      res.send({ result, token });
+    // dollar Rate
+    app.get("/dollarRate", async (req, res) => {
+      const dollar = await dollarRate.find({}).toArray();
+      res.send(dollar);
     });
 
-    // login with google
-    app.put("/googleUser/:email", async (req, res) => {
-      const email = req.params.email;
-      const memberInfo = req.body;
-      const filter = { email: email };
-      const options = { upsert: true };
-      const updateDoc = {
-        $set: memberInfo,
-      };
-      const result = await userCollection.updateOne(filter, updateDoc, options);
-      const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET);
-      res.send({ result, token });
-    });
-
-    // get user
-    app.get("/userInfo", verifyJWT, verifyMember, async (req, res) => {
-      const email = req.decoded.email;
-      const query = { email: email };
-      const user = await userCollection.findOne(query);
-      res.send(user);
-    });
-
-    // get user
-    app.put("/userInfo", verifyJWT, verifyMember, async (req, res) => {
-      const email = req.decoded.email;
-      const body = req.body;
-      const filter = { email: email };
-      const options = { upsert: true };
-      const updateDoc = {
-        $set: body,
-      };
-      const user = await userCollection.updateOne(filter, updateDoc, options);
-      res.send(user);
-    });
-
-    // update User
-    app.put("/updateUser/:email", async (req, res) => {
-      const email = req.params.email;
-      const name = req.body;
-      const filter = { email: email };
-      const options = { upsert: true };
-      const updateDoc = {
-        $set: name,
-      };
-      const user = await userCollection.updateOne(filter, updateDoc, options);
-      res.send(user);
-    });
-
-    // facebook boost post
-    app.post("/facebookBoost", verifyJWT, verifyMember, async (req, res) => {
-      const boost = req.body;
-      const order = await allOrdersCollection.insertOne(boost);
-      res.send(order);
-    });
-
-    // facebook basic promote
-    app.post("/promote", verifyJWT, verifyMember, async (req, res) => {
-      const basic = req.body;
-      const order = await allOrdersCollection.insertOne(basic);
-      res.send(order);
-    });
-
-    // facebook page setup
-    app.post("/pageSetup", verifyJWT, verifyMember, async (req, res) => {
-      const setup = req.body;
-      const order = await allOrdersCollection.insertOne(setup);
-      res.send(order);
-    });
-
-    // facebook recover
-    app.post("/recover", verifyJWT, verifyMember, async (req, res) => {
-      const basic = req.body;
-      const order = await allOrdersCollection.insertOne(basic);
-      res.send(order);
-    });
+    // ---- Member ---- //
 
     // get all order
     app.get("/all-orders", verifyJWT, verifyMember, async (req, res) => {
@@ -453,10 +132,37 @@ async function run() {
       res.send(details);
     });
 
-    // dollar Rate
-    app.get("/dollarRate", async (req, res) => {
-      const dollar = await dollarRate.find({}).toArray();
-      res.send(dollar);
+    // get all notification
+    app.get("/get-notification", verifyJWT, verifyMember, async (req, res) => {
+      const query = {};
+      const notification = await allNotificationCollection
+        .find(query)
+        .toArray();
+      res.send(notification);
+    });
+
+    // get member reports
+    app.get("/user/reports", verifyJWT, verifyMember, async (req, res) => {
+      const email = req.decoded.email;
+      const query = { email: email };
+      const result = await reportCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // get member support
+    app.get("/user/support", verifyJWT, verifyMember, async (req, res) => {
+      const email = req.decoded.email;
+      const query = { email: email };
+      const result = await supportCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // get user
+    app.get("/userInfo", verifyJWT, verifyMember, async (req, res) => {
+      const email = req.decoded.email;
+      const query = { email: email };
+      const user = await userCollection.findOne(query);
+      res.send(user);
     });
 
     // get graphic design
@@ -465,18 +171,100 @@ async function run() {
       res.send(design);
     });
 
-    // post graphic order
-    app.post("/design", verifyJWT, verifyMember, async (req, res) => {
-      const design = req.body;
-      const order = await allOrdersCollection.insertOne(design);
-      res.send(order);
+    // ---- Only Admin ---- //
+
+    // admin get report
+    app.get("/admin/allReport", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const reports = await reportCollection.find(query).toArray();
+      res.send(reports);
     });
 
-    // post support
-    app.post("/report", verifyJWT, verifyMember, async (req, res) => {
-      const support = req.body;
-      const result = await reportCollection.insertOne(support);
+    // admin get support
+    app.get("/admin/allSupport", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const reports = await supportCollection.find(query).toArray();
+      res.send(reports);
+    });
+
+    // admin balance
+    app.get("/admin-balance", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const balance = await adminBalance.find(query).toArray();
+      res.send(balance);
+    });
+
+    // admin all payments
+    app.get("/admin/payments", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const result = await adminAllPaymentsCollection.find(query).toArray();
       res.send(result);
+    });
+
+    // get admin payments
+    app.get("/admin-payments", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const result = await adminAllPaymentsCollection.find({}).toArray();
+      res.send(result);
+    });
+
+    // admin all order
+    app.get("/admin/allOrder", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const allOrder = await allOrdersCollection.find(query).toArray();
+      res.send(allOrder);
+    });
+
+    // get admin panel
+    app.get("/admin/admin-panel", verifyJWT, verifyAdmin, async (req, res) => {
+      const query = {};
+      const allUser = await userCollection.find(query).toArray();
+      res.send(allUser);
+    });
+
+    //---- put ---- //
+
+    // login with google
+    app.put("/googleUser/:email", async (req, res) => {
+      const email = req.params.email;
+      const memberInfo = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: memberInfo,
+      };
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET);
+      res.send({ result, token });
+    });
+
+    // Login user
+    app.put("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET);
+      res.send({ result, token });
+    });
+
+    // ---- Member ---- //
+
+    // get user
+    app.put("/userInfo", verifyJWT, verifyMember, async (req, res) => {
+      const email = req.decoded.email;
+      const body = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: body,
+      };
+      const user = await userCollection.updateOne(filter, updateDoc, options);
+      res.send(user);
     });
 
     // add order balance
@@ -511,25 +299,20 @@ async function run() {
       }
     });
 
-    // get support
-    app.post("/get-support", verifyJWT, verifyMember, async (req, res) => {
-      const supportInfo = req.body;
-      const result = await supportCollection.insertOne(supportInfo);
-      res.send(result);
-    });
+    // ---- Only Admin ---- //
 
-    // admin
-    // add notification by admin
-    app.post(
-      "/admin/add-notification",
-      verifyJWT,
-      verifyAdmin,
-      async (req, res) => {
-        const notification = req.body;
-        const result = await allNotificationCollection.insertOne(notification);
-        res.send(result);
-      }
-    );
+    // update User
+    app.put("/updateUser/:email", async (req, res) => {
+      const email = req.params.email;
+      const name = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: name,
+      };
+      const user = await userCollection.updateOne(filter, updateDoc, options);
+      res.send(user);
+    });
 
     // update dollarRate
     app.put(
@@ -548,20 +331,6 @@ async function run() {
         res.send(user);
       }
     );
-
-    // admin all order
-    app.get("/admin/allOrder", verifyJWT, verifyAdmin, async (req, res) => {
-      const query = {};
-      const allOrder = await allOrdersCollection.find(query).toArray();
-      res.send(allOrder);
-    });
-
-    // get admin panel
-    app.get("/admin/admin-panel", verifyJWT, verifyAdmin, async (req, res) => {
-      const query = {};
-      const allUser = await userCollection.find(query).toArray();
-      res.send(allUser);
-    });
 
     // update to make member
     app.put("/admin/make-member", verifyJWT, verifyAdmin, async (req, res) => {
@@ -587,6 +356,7 @@ async function run() {
       res.send(user);
     });
 
+    // admin order status by id
     app.put(
       "/admin/orderStatus/:id",
       verifyJWT,
@@ -608,7 +378,261 @@ async function run() {
       }
     );
 
-    //
+    // update notification
+    app.put("/admin/updateNote", verifyJWT, verifyAdmin, async (req, res) => {
+      const message = req.body.message;
+      const id = req.body.id;
+
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: { p: message },
+      };
+      const result = await allNotificationCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+
+    // update admin report
+    app.put("/admin/report-solve", verifyJWT, verifyAdmin, async (req, res) => {
+      const solve = req.body.solve;
+      const id = req.body.id;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: { solve: solve },
+      };
+      const result = await reportCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+
+    // update admin support
+    app.put(
+      "/admin/support-solve",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const solve = req.body.solve;
+        const id = req.body.id;
+        const filter = { _id: ObjectId(id) };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: { solve: solve },
+        };
+        const result = await supportCollection.updateOne(
+          filter,
+          updateDoc,
+          options
+        );
+        res.send(result);
+      }
+    );
+
+    // update admin balance
+    app.put(
+      "/admin/update-balance",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const balance = req.body.balance;
+        const id = req.body.id;
+        const filter = { _id: ObjectId(id) };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: { balance: balance },
+        };
+        const result = await adminBalance.updateOne(filter, updateDoc, options);
+        res.send(result);
+      }
+    );
+
+    // update user by admin
+    app.put(
+      "/admin/update-userInfo/:email",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const email = req.params.email;
+        const userInfo = req.body;
+        const filter = { email: email };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: userInfo,
+        };
+        const result = await userCollection.updateOne(
+          filter,
+          updateDoc,
+          options
+        );
+        res.send(result);
+      }
+    );
+
+    // update admin order details
+    app.put(
+      "/admin/edit-details/:id",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.params.id;
+        const editInfo = req.body;
+        const filter = { _id: ObjectId(id) };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: editInfo,
+        };
+        const result = await allOrdersCollection.updateOne(
+          filter,
+          updateDoc,
+          options
+        );
+        res.send(result);
+      }
+    );
+
+    //---- post ----//
+
+    // ---- Member ---- //
+
+    // facebook boost post
+    app.post("/facebookBoost", verifyJWT, verifyMember, async (req, res) => {
+      const boost = req.body;
+      const order = await allOrdersCollection.insertOne(boost);
+      res.send(order);
+    });
+
+    // facebook basic promote
+    app.post("/promote", verifyJWT, verifyMember, async (req, res) => {
+      const basic = req.body;
+      const order = await allOrdersCollection.insertOne(basic);
+      res.send(order);
+    });
+
+    // facebook page setup
+    app.post("/pageSetup", verifyJWT, verifyMember, async (req, res) => {
+      const setup = req.body;
+      const order = await allOrdersCollection.insertOne(setup);
+      res.send(order);
+    });
+
+    // facebook recover
+    app.post("/recover", verifyJWT, verifyMember, async (req, res) => {
+      const basic = req.body;
+      const order = await allOrdersCollection.insertOne(basic);
+      res.send(order);
+    });
+
+    // post graphic order
+    app.post("/design", verifyJWT, verifyMember, async (req, res) => {
+      const design = req.body;
+      const order = await allOrdersCollection.insertOne(design);
+      res.send(order);
+    });
+
+    // post support
+    app.post("/report", verifyJWT, verifyMember, async (req, res) => {
+      const support = req.body;
+      const result = await reportCollection.insertOne(support);
+      res.send(result);
+    });
+
+    // get support
+    app.post("/get-support", verifyJWT, verifyMember, async (req, res) => {
+      const supportInfo = req.body;
+      const result = await supportCollection.insertOne(supportInfo);
+      res.send(result);
+    });
+
+    // ---- Only Admin ---- //
+
+    // add admin payments
+    app.post("/admin/add-payment", verifyJWT, verifyAdmin, async (req, res) => {
+      const info = req.body;
+      const result = await adminAllPaymentsCollection.insertOne(info);
+      res.send(result);
+    });
+
+    // add front page update
+    app.post("/admin/add-update", verifyJWT, verifyAdmin, async (req, res) => {
+      const design = req.body;
+      const order = await updateCollection.insertOne(design);
+      res.send(order);
+    });
+
+    // add admin banner
+    app.post("/admin/post-banner", verifyJWT, verifyAdmin, async (req, res) => {
+      const design = req.body;
+      const order = await bannerCollection.insertOne(design);
+      res.send(order);
+    });
+
+    // add admin graphic
+    app.post("/admin/post-design", verifyJWT, verifyAdmin, async (req, res) => {
+      const design = req.body;
+      const order = await designCollection.insertOne(design);
+      res.send(order);
+    });
+
+    // add notification by admin
+    app.post(
+      "/admin/add-notification",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const notification = req.body;
+        const result = await allNotificationCollection.insertOne(notification);
+        res.send(result);
+      }
+    );
+
+    //---- delete ----//
+
+    // ---- Member ---- //
+
+    // ---- Only Admin ---- //
+
+    // delete update
+    app.delete(
+      "/admin/delete-update",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.body;
+        const query = { _id: ObjectId(id) };
+        const result = await updateCollection.deleteOne(query);
+        res.send(result);
+      }
+    );
+
+    // delete Order
+    app.delete(
+      "/admin/delete-order",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.body._id;
+        const query = { _id: ObjectId(id) };
+        const result = await allOrdersCollection.deleteOne(query);
+        res.send(result);
+      }
+    );
+
+    // delete notification
+    app.delete("/admin/deleteNot", verifyJWT, verifyAdmin, async (req, res) => {
+      const id = req.body;
+      const query = { _id: ObjectId(id) };
+      const result = await allNotificationCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // ---- End ---- //
   } finally {
   }
 }
