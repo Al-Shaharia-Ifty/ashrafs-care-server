@@ -36,6 +36,9 @@ function verifyJWT(req, res, next) {
 async function run() {
   try {
     const courseCollection = client.db("ashrafs").collection("viewCourse");
+    const userRattingCollection = client
+      .db("ashrafs")
+      .collection("userRatting");
     const adminBalance = client.db("ashrafs").collection("adminBalance");
     const adminAllPaymentsCollection = client
       .db("ashrafs")
@@ -112,6 +115,11 @@ async function run() {
     app.get("/dollarRate", async (req, res) => {
       const dollar = await dollarRate.find({}).toArray();
       res.send(dollar);
+    });
+
+    app.get("/ratting", async (req, res) => {
+      const ratting = await userRattingCollection.find({}).toArray();
+      res.send(ratting);
     });
 
     // ---- Member ---- //
@@ -591,6 +599,13 @@ async function run() {
         res.send(result);
       }
     );
+
+    // add rating by admin
+    app.post("/admin/add-ratting", verifyJWT, verifyAdmin, async (req, res) => {
+      const ratting = req.body;
+      const result = await userRattingCollection.insertOne(ratting);
+      res.send(result);
+    });
 
     //---- delete ----//
 
