@@ -48,6 +48,19 @@ async function run() {
     const allOrdersCollection = client.db("ashrafs").collection("allOrder");
     const dollarRate = client.db("ashrafs").collection("dollarRate");
     const designCollection = client.db("ashrafs").collection("graphicDesign");
+    const facebookContentDesignCollection = client
+      .db("ashrafs")
+      .collection("faceBookContentDesign");
+    const webDesignCollection = client.db("ashrafs").collection("webDesign");
+    const videoEditDesignCollection = client
+      .db("ashrafs")
+      .collection("videoEditDesign");
+    const whatsAppDesignCollection = client
+      .db("ashrafs")
+      .collection("whatsAppDesign");
+    const smsMarketingDesignCollection = client
+      .db("ashrafs")
+      .collection("smsMarketingDesign");
     const reportCollection = client.db("ashrafs").collection("report");
     const supportCollection = client.db("ashrafs").collection("get-support");
     const allNotificationCollection = client
@@ -178,6 +191,41 @@ async function run() {
       const design = await designCollection.find({}).toArray();
       res.send(design);
     });
+
+    // get Content design
+    app.get("/content-design", verifyJWT, verifyMember, async (req, res) => {
+      const design = await facebookContentDesignCollection.find({}).toArray();
+      res.send(design);
+    });
+
+    // get web design
+    app.get("/web-design", verifyJWT, verifyMember, async (req, res) => {
+      const design = await webDesignCollection.find({}).toArray();
+      res.send(design);
+    });
+
+    // get videoEdit- design
+    app.get("/videoEdit-design", verifyJWT, verifyMember, async (req, res) => {
+      const design = await videoEditDesignCollection.find({}).toArray();
+      res.send(design);
+    });
+
+    // get whatsApp design
+    app.get("/whatsApp-design", verifyJWT, verifyMember, async (req, res) => {
+      const design = await whatsAppDesignCollection.find({}).toArray();
+      res.send(design);
+    });
+
+    // get smsMarketing- design
+    app.get(
+      "/smsMarketing-design",
+      verifyJWT,
+      verifyMember,
+      async (req, res) => {
+        const design = await smsMarketingDesignCollection.find({}).toArray();
+        res.send(design);
+      }
+    );
 
     // ---- Only Admin ---- //
 
@@ -581,12 +629,73 @@ async function run() {
       res.send(order);
     });
 
-    // add admin graphic
+    // ---- add designs ----//
+    // add admin graphic design
     app.post("/admin/post-design", verifyJWT, verifyAdmin, async (req, res) => {
       const design = req.body;
       const order = await designCollection.insertOne(design);
       res.send(order);
     });
+
+    // add facebook content design
+    app.post(
+      "/admin/post-facebook-design",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const design = req.body;
+        const order = await facebookContentDesignCollection.insertOne(design);
+        res.send(order);
+      }
+    );
+
+    // add web design
+    app.post(
+      "/admin/post-web-design",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const design = req.body;
+        const order = await webDesignCollection.insertOne(design);
+        res.send(order);
+      }
+    );
+
+    // add video edit design
+    app.post(
+      "/admin/post-video-design",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const design = req.body;
+        const order = await videoEditDesignCollection.insertOne(design);
+        res.send(order);
+      }
+    );
+
+    // add whatsApp marketing design
+    app.post(
+      "/admin/post-whatsApp-design",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const design = req.body;
+        const order = await whatsAppDesignCollection.insertOne(design);
+        res.send(order);
+      }
+    );
+
+    // add sms marketing design
+    app.post(
+      "/admin/post-smsMarketing-design",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const design = req.body;
+        const order = await smsMarketingDesignCollection.insertOne(design);
+        res.send(order);
+      }
+    );
 
     // add notification by admin
     app.post(
@@ -626,6 +735,14 @@ async function run() {
       }
     );
 
+    // delete notification
+    app.delete("/admin/deleteNot", verifyJWT, verifyAdmin, async (req, res) => {
+      const id = req.body;
+      const query = { _id: ObjectId(id) };
+      const result = await allNotificationCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // delete Order
     app.delete(
       "/admin/delete-order",
@@ -639,13 +756,83 @@ async function run() {
       }
     );
 
-    // delete notification
-    app.delete("/admin/deleteNot", verifyJWT, verifyAdmin, async (req, res) => {
-      const id = req.body;
-      const query = { _id: ObjectId(id) };
-      const result = await allNotificationCollection.deleteOne(query);
-      res.send(result);
-    });
+    // delete graphic design
+    app.delete(
+      "/admin/delete-graphic-design",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.body._id;
+        const query = { _id: ObjectId(id) };
+        const result = await designCollection.deleteOne(query);
+        res.send(result);
+      }
+    );
+
+    // delete content design
+    app.delete(
+      "/admin/delete-content-design",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.body._id;
+        const query = { _id: ObjectId(id) };
+        const result = await facebookContentDesignCollection.deleteOne(query);
+        res.send(result);
+      }
+    );
+
+    // delete web design
+    app.delete(
+      "/admin/delete-website-design",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.body._id;
+        const query = { _id: ObjectId(id) };
+        const result = await webDesignCollection.deleteOne(query);
+        res.send(result);
+      }
+    );
+
+    // delete video edit design
+    app.delete(
+      "/admin/delete-videoEdit-design",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.body._id;
+        const query = { _id: ObjectId(id) };
+        const result = await videoEditDesignCollection.deleteOne(query);
+        res.send(result);
+      }
+    );
+
+    // delete whatsapp design
+    app.delete(
+      "/admin/delete-whatsapp-design",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.body._id;
+        const query = { _id: ObjectId(id) };
+        const result = await whatsAppDesignCollection.deleteOne(query);
+        res.send(result);
+      }
+    );
+
+    // delete SMS design
+    app.delete(
+      "/admin/delete-sms-design",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.body._id;
+        const query = { _id: ObjectId(id) };
+        const result = await smsMarketingDesignCollection.deleteOne(query);
+        res.send(result);
+      }
+    );
 
     // ---- End ---- //
   } finally {
